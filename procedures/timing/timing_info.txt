@@ -1,0 +1,15 @@
+LOIS (each run)
+495 seconds (198 volumes assuming 2.5 s TR)
+
+LANG LOC (each run)
+358 seconds (358 volumes assuming 1.0 s TR)
+
+TOM
+605 seconds (242 volumes assuming 2.5 s TR)
+
+SAT-I
+475 seconds (190 volumes assuming 2.5 s TR)
+
+SAT-E
+590 seconds (236 volumes assuming 2.5 s TR)
+
