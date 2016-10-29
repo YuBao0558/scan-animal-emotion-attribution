@@ -11,7 +11,7 @@ stimdir = fullfile(basedir, 'stimuli/surf2');
 screendir = fullfile(basedir, 'stimuli');
 practicedir = fullfile(basedir, 'stimuli/surf2_practice');
 designdir = fullfile(basedir, 'designs');
-utilitydir = fullfile(basedir, 'utilities');
+utilitydir = fullfile(basedir, 'ptb-utilities');
 addpath(utilitydir)
 
 %% Text %%
@@ -38,14 +38,14 @@ script_name='-- Photo Judgment Test --'; boxTop(1:length(script_name))='=';
 fprintf('%s\n%s\n%s\n',boxTop,script_name,boxTop)
 
 if nargin==0
-    
+
     %% Get Subject ID %%
     subjectID = ptb_get_input_string('\nEnter subject ID: ');
-    
+
     %% Setup Input Device(s) %%
     inputDevice = ptb_get_resp_device('Choose Participant Response Device'); % input device
     exptDevice = ptb_get_resp_device('Choose Experimenter Response Device'); % input device
-    
+
 end
 
 %% Check for Existing Logfile %%
@@ -63,7 +63,7 @@ if ~isempty(log)
     continueflag = ptb_get_input_string('\nContinue from last response? (1=Yes, 2=No) ');
     if continueflag
         lastonset = exdata(end,8);
-        Seeker(:,6) = Seeker(:,6) - lastonset; 
+        Seeker(:,6) = Seeker(:,6) - lastonset;
         Seeker(:,7:10) = 0;
         Seeker(:,7) = Seeker(:,6) + qdur + betweendur;
         totalTime = round(Seeker(end,6) + pdur + 6);
@@ -153,7 +153,7 @@ Screen('DrawTexture',w.win, instructTex); Screen('Flip',w.win);
 
 %% Practice! %%
 try
-    
+
     for t = 1:3
 
         %% Present Fixation %%
@@ -166,7 +166,7 @@ try
 
         %% Present Question Stimulus and Prepare Blank Screen While Waiting %%
         Screen('Flip',w.win);
-        Screen('FillRect', w.win, w.black); 
+        Screen('FillRect', w.win, w.black);
         WaitSecs(qdur);
 
         %% Present Blank and Prepare Photo Stimulus While Waiting %%
@@ -183,14 +183,14 @@ try
         %% Present Fixation and Listen a Little Longer for a Response %%
         Screen('Flip',w.win);
     end
-    
+
 catch
-    
+
     Screen('CloseAll');
     Priority(0);
     ShowCursor;
     psychrethrow(psychlasterror);
-    
+
 end
 
 WaitSecs(2);
@@ -206,15 +206,15 @@ Screen('DrawTexture',w.win,reminderTex); Screen('Flip',w.win);
 
 %% Wait for Trigger to Start %%
 DisableKeysForKbCheck([]);
-secs=KbTriggerWait(trigger,inputDevice);	
-anchor=secs;	
+secs=KbTriggerWait(trigger,inputDevice);
+anchor=secs;
 
 %% End here if just running Test %%
 if exist('test_tag','var') && test_tag, return, end
 
 %% Loop Over Trials %%
 try
-    
+
     for t = 1:ntrials
 
         %% Present Fixation %%
@@ -227,7 +227,7 @@ try
 
         %% Present Question Stimulus and Prepare Blank Screen While Waiting %%
         Screen('Flip',w.win);
-        Screen('FillRect', w.win, w.black); 
+        Screen('FillRect', w.win, w.black);
         WaitSecs('UntilTime', anchor + Seeker(t,7) - betweendur);
 
         %% Present Blank and Prepare Photo Stimulus While Waiting %%
@@ -254,29 +254,29 @@ try
             Seeker(t,9) = str2num(resp(1));
             Seeker(t,10) = rt;
         end
-        
+
         %% Save Data to Logfile
         fprintf(fid,[repmat('%d\t',1,size(Seeker,2)) '\n'],Seeker(t,:));
-        
+
     end
-    
+
     %% Wait Until End %%
     WaitSecs('UntilTime', anchor + totalTime);
-    
+
 catch
-    
+
     Screen('CloseAll');
     Priority(0);
     ShowCursor;
     psychrethrow(psychlasterror);
-    
+
 end
 
 %% Save Data to Matlab Variable %%
 d=clock;
 outfile=sprintf('surf2_%s_%s_%02.0f-%02.0f.mat',subjectID,date,d(4),d(5));
 try
-    save([datadir filesep outfile], 'subjectID', 'Seeker', 'slideName', 'qstim'); 
+    save([datadir filesep outfile], 'subjectID', 'Seeker', 'slideName', 'qstim');
 catch
 	fprintf('couldn''t save %s\n saving to surf2.mat\n',outfile);
 	save surf2

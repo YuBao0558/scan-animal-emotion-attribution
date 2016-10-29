@@ -10,7 +10,7 @@ datadir = fullfile(basedir, 'data');
 screendir = fullfile(basedir, 'stimuli');
 stimdir = fullfile(basedir, 'stimuli/surf1');
 designdir = fullfile(basedir, 'designs');
-utilitydir = fullfile(basedir, 'utilities');
+utilitydir = fullfile(basedir, 'ptb-utilities');
 addpath(utilitydir)
 
 %% Text %%
@@ -34,14 +34,14 @@ script_name='-- Image Observation Test --'; boxTop(1:length(script_name))='=';
 fprintf('%s\n%s\n%s\n',boxTop,script_name,boxTop)
 
 if nargin==0
-    
+
     %% Get Subject ID %%
     subjectID = ptb_get_input_string('\nEnter subject ID: ');
-    
+
     %% Setup Input Device(s) %%
     inputDevice = ptb_get_resp_device('Choose Participant Response Device'); % input device
     exptDevice = ptb_get_resp_device('Choose Experimenter Response Device'); % input device
-    
+
     %% Initialize Screen %%
     w = ptb_setup_screen(0,250,theFont,theFontSize); % setup screen
 
@@ -105,24 +105,24 @@ Screen('DrawTexture',w.win,reminderTex); Screen('Flip',w.win);
 
 %% Wait for Trigger to Start %%
 DisableKeysForKbCheck([]);
-secs=KbTriggerWait(trigger,inputDevice);	
-anchor=secs;	
+secs=KbTriggerWait(trigger,inputDevice);
+anchor=secs;
 
 %% End here if just running Test %%
 if exist('test_tag','var') && test_tag, return, end
 
 %% Loop Over Trials %%
 try
-    
+
     for t = 1:ntrials
 
         %% Present Fixation %%
         Screen('DrawTexture',w.win, fixTex); Screen('Flip',w.win);
-        
+
         %% Present Blank and Prepare Photo Stimulus While Waiting %%
         Screen('DrawTexture',w.win,slideTex{t});
         WaitSecs('UntilTime', anchor + Seeker(t,5));
-        
+
         %% If a Repeat, Look for Response %%
         Screen('Flip',w.win);
         onset = GetSecs;
@@ -145,29 +145,29 @@ try
             WaitSecs('UntilTime', anchor + Seeker(t,5) + pdur);
             Screen('Flip',w.win);
         end
-       
+
         %% Save Data to Logfile
         fprintf(fid,[repmat('%d\t',1,size(Seeker,2)) '\n'],Seeker(t,:));
-        
+
     end
-    
+
     %% Wait Until End %%
     WaitSecs('UntilTime', anchor + totalTime);
-    
+
 catch
-    
+
     Screen('CloseAll');
     Priority(0);
     ShowCursor;
     psychrethrow(psychlasterror);
-    
+
 end
 
 %% Save Data to Matlab Variable %%
 d=clock;
 outfile=sprintf('surf1_%s_%s_%02.0f-%02.0f.mat',subjectID,date,d(4),d(5));
 try
-    save([datadir filesep outfile], 'subjectID', 'Seeker', 'slideName'); 
+    save([datadir filesep outfile], 'subjectID', 'Seeker', 'slideName');
 catch
 	fprintf('couldn''t save %s\n saving to surf1.mat\n',outfile);
 	save surf1
